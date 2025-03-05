@@ -35,11 +35,11 @@ El scraper se ejecuta desde la línea de comandos y requiere dos parámetros: el
 
 Para utilizar el scraper de "Superseis":
 ```bash
-python scraper.py s6 salida_superseis.json
+python main.py s6 salida_superseis.json
 ```
 
 Para utilizar el scraper de "Stock":
 ```bash
-python scraper.py stock salida_stock.json
+python main.py stock salida_stock.json
 ```
 

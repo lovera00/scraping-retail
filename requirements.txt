@@ -3,3 +3,5 @@ python-dateutil==2.8.2
 webdriver-manager==3.8.6
 urllib3==2.0.7
 certifi==2023.7.22
+tenacity==9.0.0
+fake_useragent==2.0.3

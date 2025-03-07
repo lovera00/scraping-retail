@@ -14,6 +14,7 @@ from selenium.common.exceptions import (WebDriverException,
                                         TimeoutException, 
                                         NoSuchElementException)
 from fake_useragent import UserAgent
+import os
 
 # Configuración básica de logging
 logging.basicConfig(
@@ -58,7 +59,8 @@ class RetailScraper(Scraper):
         
     def init(self):
         options = webdriver.ChromeOptions()
-        #options.add_argument("--headless")
+        if os.environ.get("HEADLESS", "false").lower() == "true":
+            options.add_argument("--headless")
         options.add_argument("--disable-gpu")
         options.add_argument("--no-sandbox")
         options.add_argument("--window-size=1920,1080")

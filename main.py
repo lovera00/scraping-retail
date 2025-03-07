@@ -13,6 +13,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import (WebDriverException, 
                                         TimeoutException, 
                                         NoSuchElementException)
+from fake_useragent import UserAgent
 
 # Configuración básica de logging
 logging.basicConfig(
@@ -61,6 +62,8 @@ class RetailScraper(Scraper):
         options.add_argument("--disable-gpu")
         options.add_argument("--no-sandbox")
         options.add_argument("--window-size=1920,1080")
+        ua = UserAgent()
+        options.add_argument(f"user-agent={ua.random}")
         
         self.driver = webdriver.Chrome(options=options)
         try:

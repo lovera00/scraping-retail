@@ -94,20 +94,35 @@ class RetailScraper(Scraper):
             raise
     
     def _get_sku(self, product_url):
+        original_window = self.driver.current_window_handle
+        new_tab_opened = False
         try:
+            # Abrir nueva pestaña
+            self.driver.execute_script("window.open('');")
+            new_tab_opened = True
+            self.driver.switch_to.window(self.driver.window_handles[-1])
             self.driver.get(product_url)
-            print("Antes procesar sku")
-            sku_element = WebDriverWait(self.driver, 5).until(
-                #<div class="sku" itemprop="sku"> Código de Barras:7840064137020 </div>
+            
+            # Esperar y obtener SKU
+            sku_element = WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, ".sku"))
             )
-            print("Despues procesar sku", sku_element.text)
-            if "Código de Barras" not in sku_element.text:
-                return None
-            return sku_element.text.split(":")[1].strip()
-        except (TimeoutException, NoSuchElementException, IndexError) as e:
-            logger.warning(f"No se pudo obtener SKU: {str(e)}")
+            sku_text = sku_element.text.strip()
+            
+            if "Código de Barras:" in sku_text:
+                return sku_text.split(":")[1].strip()
             return None
+        except TimeoutException:
+            logger.warning(f"Timeout obteniendo SKU: {product_url}")
+            return None
+        except Exception as e:
+            logger.warning(f"Error obteniendo SKU: {str(e)}")
+            return None
+        finally:
+            # Cerrar pestaña y volver al contexto original
+            if new_tab_opened:
+                self.driver.close()
+                self.driver.switch_to.window(original_window)
     
     def _process_product(self, element, category_id, category_url, callback):
         try:
@@ -129,7 +144,7 @@ class RetailScraper(Scraper):
             )
 
             # Obtener SKU si es posible en segundo plano
-            #product.sku = self._get_sku(product_url)
+            product.sku = self._get_sku(product_url)
             
             callback(product)
             
